@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackhole // UV // Void Maze</title>
+    <title>Void // Terminal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -34,161 +34,104 @@
             padding: 20px;
             box-sizing: border-box;
             z-index: 100;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.8);
         }
 
         .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 30px;
-            cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 30px; cursor: pointer;
         }
 
         .logo-text {
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: var(--accent);
-            font-size: 1.2rem;
+            font-weight: 900; letter-spacing: 2px;
+            color: var(--accent); font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 68, 0, 0.4);
         }
 
         .search-container { margin-bottom: 25px; }
 
         #url-input {
-            width: 100%;
-            background: #000;
-            border: 1px solid #222;
-            padding: 12px;
-            border-radius: 8px;
-            color: var(--accent);
-            outline: none;
-            box-sizing: border-box;
+            width: 100%; background: #000; border: 1px solid #222;
+            padding: 12px; border-radius: 8px; color: var(--accent);
+            outline: none; box-sizing: border-box; transition: 0.3s;
         }
+        #url-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 68, 0, 0.2); }
 
         .nav-label {
-            font-size: 0.65rem;
-            color: #444;
-            letter-spacing: 2px;
-            margin: 20px 0 10px 10px;
-            text-transform: uppercase;
+            font-size: 0.65rem; color: #444; letter-spacing: 2px;
+            margin: 20px 0 10px 10px; text-transform: uppercase;
         }
 
         .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            color: #888;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            cursor: pointer;
-            transition: 0.2s;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; color: #888; border-radius: 8px;
+            margin-bottom: 5px; cursor: pointer; transition: 0.2s;
         }
-
-        .nav-item:hover, .nav-item.active {
-            background: #151515;
-            color: #fff;
-        }
-
+        .nav-item:hover, .nav-item.active { background: #151515; color: #fff; }
         .nav-item i { color: var(--accent); width: 20px; text-align: center; }
 
-        /* Content Area */
+        /* Main View */
         .main-view {
-            flex-grow: 1;
-            position: relative;
-            background: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            flex-grow: 1; position: relative;
+            background: var(--bg); overflow-y: auto;
         }
 
         .page {
-            display: none;
-            width: 100%;
-            height: 100%;
-            max-width: 1100px;
-            padding: 40px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            display: none; width: 100%; height: 100%;
+            padding: 40px; box-sizing: border-box; overflow-y: auto;
         }
-
         .page.active { display: block; }
 
         .section-header {
-            color: var(--accent);
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 30px;
+            color: var(--accent); font-size: 1.5rem;
+            font-weight: 800; margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 68, 0, 0.3);
         }
 
-        /* Grid */
+        /* App Grid */
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;
         }
 
         .app-card {
-            background: var(--card-bg);
-            border: 1px solid #222;
-            padding: 25px 15px;
-            border-radius: 12px;
-            text-align: center;
-            transition: 0.3s;
-            cursor: pointer;
+            background: var(--card-bg); border: 1px solid #222;
+            padding: 25px 15px; border-radius: 12px; text-align: center;
+            transition: 0.3s; cursor: pointer; position: relative; z-index: 10;
         }
-
-        .app-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
+        .app-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .app-card i { font-size: 2.2rem; margin-bottom: 12px; display: block; }
 
-        /* Maze Animation Area */
+        /* Custom UI overlay for the Homepage */
         #home {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; /* Prevent homepage scrolling */
+            padding: 0; margin: 0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        #maze-container {
-            position: relative;
-            width: 80%; /* Adjust size as needed */
-            height: 80%; /* Adjust size as needed */
-            border: 2px solid var(--accent);
-            background: #000;
-            overflow: hidden;
+        #bg-canvas {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: 1;
         }
 
-        #maze-canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        .home-overlay {
+            position: relative; z-index: 5;
+            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 40px 60px; border-radius: 20px;
+            border: 1px solid #222; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        #counter-display {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: bold;
-            background: rgba(0,0,0,0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
+        .counter-badge {
+            background: rgba(255, 68, 0, 0.1); border: 1px solid var(--accent);
+            color: var(--accent); padding: 5px 15px; border-radius: 20px;
+            font-size: 0.9rem; font-weight: bold; margin-top: 15px; display: inline-block;
         }
 
         /* Frame */
         #content-frame {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: none;
-            display: none;
-            background: #fff;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; border: none;
+            display: none; background: #fff; z-index: 200;
         }
     </style>
 </head>
@@ -201,44 +144,66 @@
 
         <div class="search-container">
             <form id="proxy-form">
-                <input type="text" id="url-input" placeholder="Quick Search..." autocomplete="off">
+                <input type="text" id="url-input" placeholder="Search or Type URL..." autocomplete="off">
             </form>
         </div>
 
-        <div class="nav-label">Explore</div>
+        <div class="nav-label">System</div>
         <div class="nav-item active" onclick="switchPage('home')">
-            <i class="fas fa-home"></i> Home
+            <i class="fas fa-satellite"></i> Radar
         </div>
         <div class="nav-item" onclick="switchPage('apps')">
-            <i class="fas fa-th"></i> Apps
+            <i class="fas fa-th-large"></i> Apps
         </div>
         <div class="nav-item" onclick="switchPage('games')">
             <i class="fas fa-gamepad"></i> Games
         </div>
 
         <div class="nav-item" style="margin-top: auto;" onclick="location.reload()">
-            <i class="fas fa-redo"></i> Reset
+            <i class="fas fa-power-off"></i> Reboot
         </div>
     </div>
 
-    <div class="main-view">
+    <div class="main-view" id="main-view">
+        
         <div id="home" class="page active">
-            <div id="maze-container">
-                <canvas id="maze-canvas"></canvas>
-                <div id="counter-display">Exits: <span id="exit-count">0</span></div>
+            <canvas id="bg-canvas"></canvas>
+            
+            <div class="home-overlay">
+                <div class="section-header" style="margin-bottom: 10px; font-size: 2.5rem;">VOID TERMINAL</div>
+                <p style="color: #888; font-size: 1.1rem;">Awaiting input coordinates...</p>
+                <div class="counter-badge">Maze Solves: <span id="exit-count" style="color: #fff;">0</span></div>
             </div>
         </div>
 
         <div id="apps" class="page">
             <div class="section-header">Applications</div>
             <div class="grid">
+                <div class="app-card" onclick="launchApp('https://youtube.com')">
+                    <i class="fab fa-youtube" style="color: #ff0000;"></i><span>YouTube</span>
                 </div>
+                <div class="app-card" onclick="launchApp('https://discord.com')">
+                    <i class="fab fa-discord" style="color: #5865F2;"></i><span>Discord</span>
+                </div>
+                <div class="app-card" onclick="launchApp('https://spotify.com')">
+                    <i class="fab fa-spotify" style="color: #1DB954;"></i><span>Spotify</span>
+                </div>
+            </div>
         </div>
 
         <div id="games" class="page">
             <div class="section-header">Games</div>
             <div class="grid">
+                <div class="app-card" onclick="launchApp('https://poki.com')">
+                    <i class="fas fa-bolt" style="color: #FFD700;"></i><span>Poki</span>
                 </div>
+                <div class="app-card" onclick="launchApp('https://shredders.pages.dev/')">
+                    <i class="fas fa-snowboarding" style="color: #00D1FF;"></i><span>Shredders</span>
+                </div>
+                <div class="app-card" onclick="launchApp('https://geometrydash.io')">
+                    <i class="fas fa-cube" style="color: #a020f0;"></i><span>G-Dash</span>
+                </div>
+            </div>
         </div>
 
         <iframe id="content-frame" allow="fullscreen; gamepad; autoplay;"></iframe>
@@ -247,161 +212,10 @@
     <script src="uv/uv.bundle.js"></script>
     <script src="uv/uv.config.js"></script>
     <script>
+        // UI Navigation Logic
         const frame = document.getElementById('content-frame');
         const input = document.getElementById('url-input');
-        const homePage = document.getElementById('home');
-        const canvas = document.getElementById('maze-canvas');
-        const ctx = canvas.getContext('2d');
-        const exitCountSpan = document.getElementById('exit-count');
 
-        // --- Maze & Ball Animation Logic ---
-        const rows = 15; // Adjusted for complexity
-        const cols = 20;
-        const cellWidth = 30; // Matches grid size on resize
-        const cellHeight = 30;
-        let maze;
-        let ball = { x: cellWidth / 2, y: cellHeight / 2, radius: cellWidth / 3, vx: 2, vy: 2, color: '#ff4400' };
-        let exit = { row: rows - 1, col: cols - 1 };
-        let count = 0;
-
-        function initCanvas() {
-            // Match canvas coordinates to container size
-            const container = document.getElementById('maze-container');
-            canvas.width = cols * cellWidth;
-            canvas.height = rows * cellHeight;
-        }
-
-        function generateMaze(r, c) {
-            // Simple depth-first search for randomized maze generation
-            maze = Array.from({ length: r }, () => Array(c).fill(1)); // 1 is wall, 0 is path
-            const stack = [{ r: 0, c: 0 }];
-            maze[0][0] = 0;
-
-            while (stack.length > 0) {
-                const current = stack[stack.length - 1];
-                const neighbors = [];
-
-                if (current.r > 1 && maze[current.r - 2][current.c] === 1) neighbors.push({ r: current.r - 2, c: current.c });
-                if (current.r < r - 2 && maze[current.r + 2][current.c] === 1) neighbors.push({ r: current.r + 2, c: current.c });
-                if (current.c > 1 && maze[current.r][current.c - 2] === 1) neighbors.push({ r: current.r, c: current.c - 2 });
-                if (current.c < c - 2 && maze[current.r][current.c + 2] === 1) neighbors.push({ r: current.r, c: current.c + 2 });
-
-                if (neighbors.length > 0) {
-                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
-                    // Break wall between cells
-                    maze[(current.r + next.r) / 2][(current.c + next.c) / 2] = 0;
-                    maze[next.r][next.c] = 0;
-                    stack.push(next);
-                } else {
-                    stack.pop();
-                }
-            }
-            // Ensure exit path
-            maze[exit.row][exit.col] = 0; 
-            if (maze[exit.row - 1][exit.col] === 1 && maze[exit.row][exit.col - 1] === 1) {
-                // Break a wall nearby if exit is isolated
-                Math.random() > 0.5 ? maze[exit.row - 1][exit.col] = 0 : maze[exit.row][exit.col - 1] = 0;
-            }
-        }
-
-        function resetMaze() {
-            generateMaze(rows, cols);
-            // Randomize start position slightly (still on path)
-            let startPos = { r: 0, c: 0 };
-            do {
-                startPos.r = Math.floor(Math.random() * (rows / 3));
-                startPos.c = Math.floor(Math.random() * (cols / 3));
-            } while (maze[startPos.r][startPos.c] === 1);
-            ball.x = startPos.c * cellWidth + cellWidth / 2;
-            ball.y = startPos.r * cellHeight + cellHeight / 2;
-            
-            // Randomize ball velocity slightly
-            ball.vx = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random());
-            ball.vy = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random());
-        }
-
-        function drawMaze() {
-            ctx.fillStyle = '#1a1a1a'; // Wall color
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    if (maze[r][c] === 1) {
-                        ctx.fillRect(c * cellWidth, r * cellHeight, cellWidth, cellHeight);
-                    }
-                }
-            }
-            // Draw Exit
-            ctx.fillStyle = '#00ff00';
-            ctx.fillRect(exit.col * cellWidth, exit.row * cellHeight, cellWidth, cellHeight);
-        }
-
-        function drawBall() {
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fillStyle = ball.color;
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        function isCollision(x, y) {
-            // Check edges of the canvas
-            if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return true;
-
-            // Check if ball center overlaps a wall cell
-            const col = Math.floor(x / cellWidth);
-            const row = Math.floor(y / cellHeight);
-            if (row >= 0 && row < rows && col >= 0 && col < cols) {
-                return maze[row][col] === 1;
-            }
-            return false;
-        }
-
-        function checkExit() {
-            const col = Math.floor(ball.x / cellWidth);
-            const row = Math.floor(ball.y / cellHeight);
-            if (row === exit.row && col === exit.col) {
-                count++;
-                exitCountSpan.innerText = count;
-                resetMaze();
-            }
-        }
-
-        function animate() {
-            if (!homePage.classList.contains('active')) return; // Pause when not viewing homepage
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawMaze();
-
-            // Predict next position
-            let nextX = ball.x + ball.vx;
-            let nextY = ball.y + ball.vy;
-
-            // Simple Axis-Aligned Bounding Box (AABB) collision resolution
-            if (isCollision(nextX, ball.y)) { // X-axis bounce
-                ball.vx *= -1;
-                nextX = ball.x + ball.vx;
-            }
-            if (isCollision(ball.x, nextY)) { // Y-axis bounce
-                ball.vy *= -1;
-                nextY = ball.y + ball.vy;
-            }
-            
-            // Corner case fallback
-            if (isCollision(nextX, nextY)) {
-                 ball.vx *= -1;
-                 ball.vy *= -1;
-                 nextX = ball.x + ball.vx;
-                 nextY = ball.y + ball.vy;
-            }
-
-            ball.x = nextX;
-            ball.y = nextY;
-
-            drawBall();
-            checkExit();
-            requestAnimationFrame(animate);
-        }
-
-        // --- Core Page Navigation (Updated) ---
         function switchPage(pageId) {
             frame.style.display = 'none';
             frame.src = 'about:blank';
@@ -411,18 +225,10 @@
             
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             event.currentTarget.classList.add('active');
-
-            // Handle starting/stopping the maze animation
-            if (pageId === 'home') {
-                animate(); // Restart animation
-            }
         }
 
-        // --- Startup & Core UV ---
         async function launchApp(url) {
-            // ... (launchApp remains the same, but switchPage will stop the maze)
-            switchPage('home'); // Briefly switch away to stop animation
-            homePage.classList.remove('active'); // Explicitly hide homepage
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             frame.style.display = 'block';
 
             if ('serviceWorker' in navigator) {
@@ -432,16 +238,209 @@
         }
 
         document.getElementById('proxy-form').onsubmit = (e) => {
-            // ... (form submission logic remains the same, calling launchApp)
+            e.preventDefault();
+            let url = input.value.trim();
+            if (!url.includes('.') || url.includes(' ')) {
+                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            } else if (!url.startsWith('http')) {
+                url = 'https://' + url;
+            }
+            launchApp(url);
         };
 
-        // Initial setup
-        window.addEventListener('load', () => {
-            initCanvas();
+        // --- HIGH QUALITY MAZE LOGIC ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const exitCountSpan = document.getElementById('exit-count');
+        const mainView = document.getElementById('main-view');
+
+        let cellSize = 45; // Dynamically scaling squares
+        let rows, cols, maze;
+        let count = 0;
+        
+        let ball = { 
+            x: 0, y: 0, radius: 0, 
+            vx: 0, vy: 0, 
+            color: '#ff4400' 
+        };
+        let exit = { row: 0, col: 0 };
+
+        function resizeCanvas() {
+            // Fill the main view area perfectly
+            canvas.width = mainView.clientWidth;
+            canvas.height = mainView.clientHeight;
+            
+            cols = Math.floor(canvas.width / cellSize);
+            rows = Math.floor(canvas.height / cellSize);
+            
+            // Adjust cell size slightly so it perfectly covers the edges without gaps
+            let exactCellWidth = canvas.width / cols;
+            let exactCellHeight = canvas.height / rows;
+            cellSize = Math.max(exactCellWidth, exactCellHeight);
+
             resetMaze();
+        }
+
+        function generateMaze() {
+            maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+            const stack = [{ r: 0, c: 0 }];
+            maze[0][0] = 0;
+
+            while (stack.length > 0) {
+                const current = stack[stack.length - 1];
+                const neighbors = [];
+
+                if (current.r > 1 && maze[current.r - 2][current.c] === 1) neighbors.push({ r: current.r - 2, c: current.c });
+                if (current.r < rows - 2 && maze[current.r + 2][current.c] === 1) neighbors.push({ r: current.r + 2, c: current.c });
+                if (current.c > 1 && maze[current.r][current.c - 2] === 1) neighbors.push({ r: current.r, c: current.c - 2 });
+                if (current.c < cols - 2 && maze[current.r][current.c + 2] === 1) neighbors.push({ r: current.r, c: current.c + 2 });
+
+                if (neighbors.length > 0) {
+                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    maze[(current.r + next.r) / 2][(current.c + next.c) / 2] = 0;
+                    maze[next.r][next.c] = 0;
+                    stack.push(next);
+                } else {
+                    stack.pop();
+                }
+            }
+
+            // Set exit at bottom right
+            exit = { row: rows - 1, col: cols - 1 };
+            maze[exit.row][exit.col] = 0;
+            if (exit.row > 0 && exit.col > 0 && maze[exit.row - 1][exit.col] === 1 && maze[exit.row][exit.col - 1] === 1) {
+                Math.random() > 0.5 ? maze[exit.row - 1][exit.col] = 0 : maze[exit.row][exit.col - 1] = 0;
+            }
+        }
+
+        function resetMaze() {
+            generateMaze();
+            ball.radius = cellSize * 0.25; // Smaller ball prevents tight corner clipping
+            
+            // Find a valid starting spot in top-left quadrant
+            let startR = 0, startC = 0;
+            while(maze[startR][startC] === 1) {
+                startR = Math.floor(Math.random() * (rows/3));
+                startC = Math.floor(Math.random() * (cols/3));
+            }
+            
+            ball.x = (startC * cellSize) + (cellSize / 2);
+            ball.y = (startR * cellSize) + (cellSize / 2);
+            
+            // Speed based on screen size so it scales nicely
+            const speed = cellSize * 0.12; 
+            ball.vx = speed * (Math.random() > 0.5 ? 1 : -1);
+            ball.vy = speed * (Math.random() > 0.5 ? 1 : -1);
+        }
+
+        // --- UPGRADED COLLISION DETECTION ---
+        function isCollision(newX, newY) {
+            // Check canvas boundaries
+            if (newX - ball.radius < 0 || newX + ball.radius > canvas.width) return true;
+            if (newY - ball.radius < 0 || newY + ball.radius > canvas.height) return true;
+
+            // Check grid bounding box (prevents clipping through walls entirely)
+            let minCol = Math.floor((newX - ball.radius) / cellSize);
+            let maxCol = Math.floor((newX + ball.radius) / cellSize);
+            let minRow = Math.floor((newY - ball.radius) / cellSize);
+            let maxRow = Math.floor((newY + ball.radius) / cellSize);
+
+            for (let r = minRow; r <= maxRow; r++) {
+                for (let c = minCol; c <= maxCol; c++) {
+                    if (r >= 0 && r < rows && c >= 0 && c < cols) {
+                        if (maze[r][c] === 1) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function drawMaze() {
+            ctx.fillStyle = '#0a0a0a'; // Wall color
+            ctx.strokeStyle = '#151515'; // Wall border
+            ctx.lineWidth = 1;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (maze[r][c] === 1) {
+                        ctx.fillRect(c * cellSize, r * cellSize, cellSize + 1, cellSize + 1);
+                        ctx.strokeRect(c * cellSize, r * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            
+            // Draw Exit (Neon Green)
+            ctx.fillStyle = '#00ff44';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#00ff44';
+            ctx.fillRect(exit.col * cellSize + 5, exit.row * cellSize + 5, cellSize - 10, cellSize - 10);
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+
+        function animate() {
+            if (!document.getElementById('home').classList.contains('active')) {
+                requestAnimationFrame(animate);
+                return;
+            }
+
+            // High-Quality Motion Blur Trail Effect
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawMaze();
+
+            // Calculate next position
+            let nextX = ball.x + ball.vx;
+            let nextY = ball.y + ball.vy;
+
+            // Apply Axis-Aligned Collision Resolution
+            if (isCollision(nextX, ball.y)) {
+                ball.vx *= -1;
+                nextX = ball.x + ball.vx;
+            }
+            if (isCollision(ball.x, nextY)) {
+                ball.vy *= -1;
+                nextY = ball.y + ball.vy;
+            }
+            
+            // Corner catch
+            if (isCollision(nextX, nextY)) {
+                ball.vx *= -1;
+                ball.vy *= -1;
+                nextX = ball.x + ball.vx;
+                nextY = ball.y + ball.vy;
+            }
+
+            ball.x = nextX;
+            ball.y = nextY;
+
+            // Draw glowing ball
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = ball.color;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = ball.color;
+            ctx.fill();
+            ctx.closePath();
+            ctx.shadowBlur = 0;
+
+            // Exit Check
+            const col = Math.floor(ball.x / cellSize);
+            const row = Math.floor(ball.y / cellSize);
+            if (row === exit.row && col === exit.col) {
+                count++;
+                exitCountSpan.innerText = count;
+                resetMaze();
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize Canvas
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', () => {
+            resizeCanvas();
             animate();
         });
-        window.addEventListener('resize', initCanvas); // Adjust canvas coordinates on window resize
 
     </script>
 </body>
