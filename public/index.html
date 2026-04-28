@@ -1,122 +1,260 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-    />
-    <title>Ultraviolet | Sophisticated Web Proxy</title>
-    <meta
-      name="description"
-      content="Ultraviolet is a highly sophisticated proxy used for evading internet censorship or accessing websites in a controlled sandbox using the power of service-workers. Unblock sites today!"
-    />
-    <meta
-      name="keywords"
-      content="proxy, web proxy, ultraviolet, service workers, unblock websites, unblock chromebook, free web proxy, proxy list, proxy sites, un block chromebook, online proxy, proxy server, proxysite, proxy youtube, bypass securly, bypass iboss, bypass lightspeed filter, holy unblocker, chromebooks, titanium network, unblock youtube, youtube proxy, unblocked youtube, youtube unblocked"
-    />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: dark)"
-      content="#434c5e"
-    />
-    <meta name="googlebot" content="index, follow, snippet" />
-    <link rel="shortcut icon" content="favicon.ico" />
-    <link rel="stylesheet" href="index.css" />
-    <script src="baremux/index.js" defer></script>
-    <script src="epoxy/index.js" defer></script>
-    <script src="uv/uv.bundle.js" defer></script>
-    <script src="uv/uv.config.js" defer></script>
-    <script src="register-sw.js" defer></script>
-    <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is Ultraviolet (Web Proxy)?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Highly sophisticated proxy used for evading internet censorship or accessing websites in a controlled sandbox using the power of service-workers and more!"
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackhole // UV</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #ff4400;
+            --bg: #050505;
+            --nav-bg: #0a0a0a;
+            --text: #ffffff;
+            --card-bg: #0f0f0f;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background: var(--bg);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .nav-bar {
+            background: var(--nav-bg);
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 15px;
+            border-bottom: 2px solid var(--accent);
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .address-bar-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background: #111;
+            border-radius: 30px;
+            padding: 5px 20px;
+            border: 1px solid #333;
+        }
+
+        #url-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ff9900;
+            padding: 8px;
+            outline: none;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        
+        .main-container {
+            height: calc(100vh - 65px);
+            overflow-y: auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .category-title {
+            color: var(--accent);
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            margin: 30px 0 15px 10px;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .app-card {
+            background: var(--card-bg);
+            border: 1px solid #1a1a1a;
+            padding: 25px 15px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .app-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            background: #151515;
+            box-shadow: 0 5px 15px rgba(255, 68, 0, 0.2);
+        }
+
+        .app-card i {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+            color: #fff;
+        }
+
+        .app-card span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #bbb;
+        }
+
+        #content-frame {
+            width: 100%;
+            height: calc(100vh - 65px);
+            border: none;
+            background: #fff;
+            display: none; /* Hidden until a site is launched */
+        }
+
+        .hidden { display: none !important; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="nav-bar">
+        <div class="logo-section" onclick="location.reload()">
+            <div class="logo-circle"><i class="fas fa-dot-circle" style="color: var(--accent); font-size: 10px;"></i></div>
+            <div style="font-weight: 900; letter-spacing: 2px; color: var(--accent);">VOID</div>
+        </div>
+
+        <form id="proxy-form" class="address-bar-container">
+            <input type="text" id="url-input" placeholder="Search or enter coordinates..." autocomplete="off">
+        </form>
+
+        <button class="btn" onclick="processUrl()">LAUNCH</button>
+    </nav>
+
+    <div id="home-content" class="main-container">
+        
+        <div class="category-title">Social & Apps</div>
+        <div class="grid">
+            <div class="app-card" onclick="launchApp('https://www.youtube.com')">
+                <i class="fab fa-youtube"></i>
+                <span>YouTube</span>
+            </div>
+            <div class="app-card" onclick="launchApp('https://www.discord.com')">
+                <i class="fab fa-discord"></i>
+                <span>Discord</span>
+            </div>
+            <div class="app-card" onclick="launchApp('https://www.spotify.com')">
+                <i class="fas fa-music"></i>
+                <span>Spotify</span>
+            </div>
+            <div class="app-card" onclick="launchApp('https://www.tiktok.com')">
+                <i class="fab fa-tiktok"></i>
+                <span>TikTok</span>
+            </div>
+        </div>
+
+        <div class="category-title">Games</div>
+        <div class="grid">
+            <div class="app-card" onclick="launchApp('https://poki.com')">
+                <i class="fas fa-gamepad"></i>
+                <span>Poki</span>
+            </div>
+            <div class="app-card" onclick="launchApp('https://shredders.pages.dev/')">
+                <i class="fas fa-snowboarding"></i>
+                <span>Shredders</span>
+            </div>
+            <div class="app-card" onclick="launchApp('https://geometrydash.io/')">
+                <i class="fas fa-square"></i>
+                <span>Geometry Dash</span>
+            </div>
+            <div class="app-card" onclick="launchApp('https://now.gg')">
+                <i class="fas fa-cloud"></i>
+                <span>Now.gg</span>
+            </div>
+        </div>
+
+    </div>
+
+    <iframe id="content-frame" allow="fullscreen; gamepad; autoplay;" src="about:blank"></iframe>
+
+    <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
+    <script>
+        const form = document.getElementById('proxy-form');
+        const input = document.getElementById('url-input');
+        const frame = document.getElementById('content-frame');
+        const home = document.getElementById('home-content');
+
+        async function launchApp(url) {
+            if (!url) return;
+
+            home.classList.add('hidden');
+            frame.style.display = 'block';
+
+            if ('serviceWorker' in navigator) {
+                await window.navigator.serviceWorker.register('./sw.js', {
+                    scope: __uv$config.prefix
+                });
+                
+                frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
             }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I unblock sites using Ultraviolet?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Simply head to an official site featuring Ultraviolet such as Holy Unblocker or Incognito! You can also self-host Ultraviolet on your own web server for maximum privacy."
+        }
+
+        function processUrl() {
+            let url = input.value.trim();
+            const searchEngine = "https://www.google.com/search?q=";
+
+            if (!url) return;
+
+            if (!(url.includes('.') && !url.includes(' '))) {
+                url = searchEngine + encodeURIComponent(url);
+            } else if (!url.startsWith('http')) {
+                url = 'https://' + url;
             }
-          },
-          {
-            "@type": "Question",
-            "name": "What if Ultraviolet is blocked or not working?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Join the Titanium Network Discord at discord.gg/unblock!"
-            }
-          }
-        ]
-      }
+
+            launchApp(url);
+        }
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            processUrl();
+        };
     </script>
-  </head>
-
-  <body>
-    <div
-      title="Ultraviolet Logo"
-      class="flex-center logo-wrapper header-center"
-    >
-      <img class="logo" src="uv.png" alt="Ultraviolet" />
-      <h1>Ultraviolet | TN</h1>
-    </div>
-    <div class="flex-center desc left-margin">
-      <p>
-        Ultraviolet is highly sophisticated proxy used for evading internet
-        censorship.
-      </p>
-    </div>
-
-    <form id="uv-form" class="flex-center">
-      <input
-        id="uv-search-engine"
-        value="https://www.google.com/search?q=%s"
-        type="hidden"
-      />
-      <input id="uv-address" type="text" placeholder="Search the web freely" />
-    </form>
-    <div class="desc left-margin">
-      <p id="uv-error"></p>
-      <pre id="uv-error-code"></pre>
-    </div>
-    <footer>
-      <div>
-        <a
-          title="The TitaniumNetwork GitHub organization"
-          href="https://github.com/titaniumnetwork-dev"
-          >TitaniumNetwork</a
-        >
-        <a title="The TitaniumNetwork Discord" href="https://discord.gg/unblock"
-          >Discord</a
-        >
-        <a
-          title="The TompHTTP GitHub organization"
-          href="https://github.com/tomphttp"
-          >TompHTTP</a
-        >
-        <a
-          title="The official deployment repository for Ultraviolet"
-          href="https://github.com/titaniumnetwork-dev/Ultraviolet-App"
-          >GitHub</a
-        >
-        <a title="License information" href="credits.html">Credits</a>
-      </div>
-      <div>
-        <span>Ultraviolet &copy; TN 2023</span>
-      </div>
-    </footer>
-    <iframe style="display: none;" id="uv-frame"></iframe>
-  </body>
+</body>
 </html>
