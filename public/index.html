@@ -26,7 +26,7 @@
 
         /* Sidebar Styling */
         .sidebar {
-            width: 260px;
+            width: 240px;
             background: var(--sidebar-bg);
             border-right: 1px solid #1a1a1a;
             display: flex;
@@ -51,10 +51,7 @@
             font-size: 1.2rem;
         }
 
-        /* Sidebar Search */
-        .search-container {
-            margin-bottom: 30px;
-        }
+        .search-container { margin-bottom: 25px; }
 
         #url-input {
             width: 100%;
@@ -65,16 +62,14 @@
             color: var(--accent);
             outline: none;
             box-sizing: border-box;
-            transition: 0.3s;
         }
 
-        #url-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(255, 68, 0, 0.2);
-        }
-
-        .sidebar-nav {
-            flex-grow: 1;
+        .nav-label {
+            font-size: 0.65rem;
+            color: #444;
+            letter-spacing: 2px;
+            margin: 20px 0 10px 10px;
+            text-transform: uppercase;
         }
 
         .nav-item {
@@ -83,7 +78,6 @@
             gap: 12px;
             padding: 12px;
             color: #888;
-            text-decoration: none;
             border-radius: 8px;
             margin-bottom: 5px;
             cursor: pointer;
@@ -97,7 +91,7 @@
 
         .nav-item i { color: var(--accent); width: 20px; text-align: center; }
 
-        /* Main Display Area */
+        /* Content Area */
         .main-view {
             flex-grow: 1;
             position: relative;
@@ -105,26 +99,26 @@
             overflow-y: auto;
         }
 
-        .content-container {
+        .page {
+            display: none;
             padding: 40px;
             max-width: 1100px;
             margin: 0 auto;
         }
 
+        .page.active { display: block; }
+
         .section-header {
             color: var(--accent);
-            font-size: 0.7rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            margin: 40px 0 20px;
-            border-bottom: 1px solid #1a1a1a;
-            padding-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
         }
 
-        /* Grid System */
+        /* Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 20px;
         }
 
@@ -141,61 +135,57 @@
         .app-card:hover {
             border-color: var(--accent);
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
         .app-card i { font-size: 2.2rem; margin-bottom: 12px; display: block; }
-        .app-card span { font-size: 0.9rem; color: #eee; font-weight: 500; }
 
-        /* The Proxy Frame */
+        /* Frame */
         #content-frame {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             border: none;
-            display: none; /* Hidden by default */
+            display: none;
             background: #fff;
         }
-
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="logo-section" onclick="showHome()">
+        <div class="logo-section" onclick="switchPage('home')">
             <div class="logo-text">VOID</div>
         </div>
 
         <div class="search-container">
             <form id="proxy-form">
-                <input type="text" id="url-input" placeholder="Enter URL..." autocomplete="off">
+                <input type="text" id="url-input" placeholder="Quick Search..." autocomplete="off">
             </form>
         </div>
 
-        <div class="sidebar-nav">
-            <div class="nav-item active" onclick="showHome()">
-                <i class="fas fa-th-large"></i> Dashboard
-            </div>
-            <div class="nav-item" onclick="launchApp('https://poki.com')">
-                <i class="fas fa-gamepad"></i> Games
-            </div>
-            <div class="nav-item" onclick="launchApp('https://discord.com')">
-                <i class="fab fa-discord"></i> Discord
-            </div>
-            <div class="nav-item" onclick="launchApp('https://youtube.com')">
-                <i class="fab fa-youtube"></i> YouTube
-            </div>
+        <div class="nav-label">Explore</div>
+        <div class="nav-item active" onclick="switchPage('home')">
+            <i class="fas fa-home"></i> Home
+        </div>
+        <div class="nav-item" onclick="switchPage('apps')">
+            <i class="fas fa-th"></i> Apps
+        </div>
+        <div class="nav-item" onclick="switchPage('games')">
+            <i class="fas fa-gamepad"></i> Games
         </div>
 
         <div class="nav-item" style="margin-top: auto;" onclick="location.reload()">
-            <i class="fas fa-sync-alt"></i> Reset Session
+            <i class="fas fa-redo"></i> Reset
         </div>
     </div>
 
     <div class="main-view">
-        <div id="home-view" class="content-container">
-            
+        <div id="home" class="page active">
+            <div class="section-header">Welcome to the Void</div>
+            <p style="color: #666;">Use the sidebar to explore applications or enter a URL above.</p>
+        </div>
+
+        <div id="apps" class="page">
             <div class="section-header">Applications</div>
             <div class="grid">
                 <div class="app-card" onclick="launchApp('https://youtube.com')">
@@ -210,13 +200,11 @@
                     <i class="fab fa-spotify" style="color: #1DB954;"></i>
                     <span>Spotify</span>
                 </div>
-                <div class="app-card" onclick="launchApp('https://geforce-now.com')">
-                    <i class="fas fa-desktop" style="color: #76B900;"></i>
-                    <span>GFN</span>
-                </div>
             </div>
+        </div>
 
-            <div class="section-header">Games Area</div>
+        <div id="games" class="page">
+            <div class="section-header">Games</div>
             <div class="grid">
                 <div class="app-card" onclick="launchApp('https://poki.com')">
                     <i class="fas fa-bolt" style="color: #FFD700;"></i>
@@ -226,16 +214,11 @@
                     <i class="fas fa-snowboarding" style="color: #00D1FF;"></i>
                     <span>Shredders</span>
                 </div>
-                <div class="app-card" onclick="launchApp('https://crazygames.com')">
-                    <i class="fas fa-fire" style="color: #ff4400;"></i>
-                    <span>CrazyGames</span>
-                </div>
                 <div class="app-card" onclick="launchApp('https://geometrydash.io')">
-                    <i class="fas fa-ghost" style="color: #a020f0;"></i>
+                    <i class="fas fa-cube" style="color: #a020f0;"></i>
                     <span>G-Dash</span>
                 </div>
             </div>
-
         </div>
 
         <iframe id="content-frame" allow="fullscreen; gamepad; autoplay;"></iframe>
@@ -245,29 +228,30 @@
     <script src="uv/uv.config.js"></script>
     <script>
         const frame = document.getElementById('content-frame');
-        const home = document.getElementById('home-view');
         const input = document.getElementById('url-input');
 
-        async function launchApp(url) {
-            if (!url) return;
-            
-            // Hide dashboard, show iframe
-            home.classList.add('hidden');
-            frame.style.display = 'block';
-
-            // UV Init
-            if ('serviceWorker' in navigator) {
-                await window.navigator.serviceWorker.register('./sw.js', {
-                    scope: __uv$config.prefix
-                });
-                frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-            }
-        }
-
-        function showHome() {
+        function switchPage(pageId) {
+            // Hide the iframe if switching pages
             frame.style.display = 'none';
             frame.src = 'about:blank';
-            home.classList.remove('hidden');
+            
+            // Toggle active class on pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            // Toggle active class on nav items
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        async function launchApp(url) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            frame.style.display = 'block';
+
+            if ('serviceWorker' in navigator) {
+                await window.navigator.serviceWorker.register('./sw.js', { scope: __uv$config.prefix });
+                frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+            }
         }
 
         document.getElementById('proxy-form').onsubmit = (e) => {
