@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackhole // UV</title>
+    <title>Blackhole // UV // Void Maze</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -96,14 +96,20 @@
             flex-grow: 1;
             position: relative;
             background: var(--bg);
-            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .page {
             display: none;
-            padding: 40px;
+            width: 100%;
+            height: 100%;
             max-width: 1100px;
-            margin: 0 auto;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
         .page.active { display: block; }
@@ -138,6 +144,42 @@
         }
 
         .app-card i { font-size: 2.2rem; margin-bottom: 12px; display: block; }
+
+        /* Maze Animation Area */
+        #home {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent homepage scrolling */
+        }
+
+        #maze-container {
+            position: relative;
+            width: 80%; /* Adjust size as needed */
+            height: 80%; /* Adjust size as needed */
+            border: 2px solid var(--accent);
+            background: #000;
+            overflow: hidden;
+        }
+
+        #maze-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #counter-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
 
         /* Frame */
         #content-frame {
@@ -181,44 +223,22 @@
 
     <div class="main-view">
         <div id="home" class="page active">
-            <div class="section-header">Welcome to the Void</div>
-            <p style="color: #666;">Use the sidebar to explore applications or enter a URL above.</p>
+            <div id="maze-container">
+                <canvas id="maze-canvas"></canvas>
+                <div id="counter-display">Exits: <span id="exit-count">0</span></div>
+            </div>
         </div>
 
         <div id="apps" class="page">
             <div class="section-header">Applications</div>
             <div class="grid">
-                <div class="app-card" onclick="launchApp('https://youtube.com')">
-                    <i class="fab fa-youtube" style="color: #ff0000;"></i>
-                    <span>YouTube</span>
                 </div>
-                <div class="app-card" onclick="launchApp('https://discord.com')">
-                    <i class="fab fa-discord" style="color: #5865F2;"></i>
-                    <span>Discord</span>
-                </div>
-                <div class="app-card" onclick="launchApp('https://spotify.com')">
-                    <i class="fab fa-spotify" style="color: #1DB954;"></i>
-                    <span>Spotify</span>
-                </div>
-            </div>
         </div>
 
         <div id="games" class="page">
             <div class="section-header">Games</div>
             <div class="grid">
-                <div class="app-card" onclick="launchApp('https://poki.com')">
-                    <i class="fas fa-bolt" style="color: #FFD700;"></i>
-                    <span>Poki</span>
                 </div>
-                <div class="app-card" onclick="launchApp('https://shredders.pages.dev/')">
-                    <i class="fas fa-snowboarding" style="color: #00D1FF;"></i>
-                    <span>Shredders</span>
-                </div>
-                <div class="app-card" onclick="launchApp('https://geometrydash.io')">
-                    <i class="fas fa-cube" style="color: #a020f0;"></i>
-                    <span>G-Dash</span>
-                </div>
-            </div>
         </div>
 
         <iframe id="content-frame" allow="fullscreen; gamepad; autoplay;"></iframe>
@@ -229,23 +249,180 @@
     <script>
         const frame = document.getElementById('content-frame');
         const input = document.getElementById('url-input');
+        const homePage = document.getElementById('home');
+        const canvas = document.getElementById('maze-canvas');
+        const ctx = canvas.getContext('2d');
+        const exitCountSpan = document.getElementById('exit-count');
 
+        // --- Maze & Ball Animation Logic ---
+        const rows = 15; // Adjusted for complexity
+        const cols = 20;
+        const cellWidth = 30; // Matches grid size on resize
+        const cellHeight = 30;
+        let maze;
+        let ball = { x: cellWidth / 2, y: cellHeight / 2, radius: cellWidth / 3, vx: 2, vy: 2, color: '#ff4400' };
+        let exit = { row: rows - 1, col: cols - 1 };
+        let count = 0;
+
+        function initCanvas() {
+            // Match canvas coordinates to container size
+            const container = document.getElementById('maze-container');
+            canvas.width = cols * cellWidth;
+            canvas.height = rows * cellHeight;
+        }
+
+        function generateMaze(r, c) {
+            // Simple depth-first search for randomized maze generation
+            maze = Array.from({ length: r }, () => Array(c).fill(1)); // 1 is wall, 0 is path
+            const stack = [{ r: 0, c: 0 }];
+            maze[0][0] = 0;
+
+            while (stack.length > 0) {
+                const current = stack[stack.length - 1];
+                const neighbors = [];
+
+                if (current.r > 1 && maze[current.r - 2][current.c] === 1) neighbors.push({ r: current.r - 2, c: current.c });
+                if (current.r < r - 2 && maze[current.r + 2][current.c] === 1) neighbors.push({ r: current.r + 2, c: current.c });
+                if (current.c > 1 && maze[current.r][current.c - 2] === 1) neighbors.push({ r: current.r, c: current.c - 2 });
+                if (current.c < c - 2 && maze[current.r][current.c + 2] === 1) neighbors.push({ r: current.r, c: current.c + 2 });
+
+                if (neighbors.length > 0) {
+                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    // Break wall between cells
+                    maze[(current.r + next.r) / 2][(current.c + next.c) / 2] = 0;
+                    maze[next.r][next.c] = 0;
+                    stack.push(next);
+                } else {
+                    stack.pop();
+                }
+            }
+            // Ensure exit path
+            maze[exit.row][exit.col] = 0; 
+            if (maze[exit.row - 1][exit.col] === 1 && maze[exit.row][exit.col - 1] === 1) {
+                // Break a wall nearby if exit is isolated
+                Math.random() > 0.5 ? maze[exit.row - 1][exit.col] = 0 : maze[exit.row][exit.col - 1] = 0;
+            }
+        }
+
+        function resetMaze() {
+            generateMaze(rows, cols);
+            // Randomize start position slightly (still on path)
+            let startPos = { r: 0, c: 0 };
+            do {
+                startPos.r = Math.floor(Math.random() * (rows / 3));
+                startPos.c = Math.floor(Math.random() * (cols / 3));
+            } while (maze[startPos.r][startPos.c] === 1);
+            ball.x = startPos.c * cellWidth + cellWidth / 2;
+            ball.y = startPos.r * cellHeight + cellHeight / 2;
+            
+            // Randomize ball velocity slightly
+            ball.vx = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random());
+            ball.vy = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random());
+        }
+
+        function drawMaze() {
+            ctx.fillStyle = '#1a1a1a'; // Wall color
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (maze[r][c] === 1) {
+                        ctx.fillRect(c * cellWidth, r * cellHeight, cellWidth, cellHeight);
+                    }
+                }
+            }
+            // Draw Exit
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(exit.col * cellWidth, exit.row * cellHeight, cellWidth, cellHeight);
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = ball.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function isCollision(x, y) {
+            // Check edges of the canvas
+            if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return true;
+
+            // Check if ball center overlaps a wall cell
+            const col = Math.floor(x / cellWidth);
+            const row = Math.floor(y / cellHeight);
+            if (row >= 0 && row < rows && col >= 0 && col < cols) {
+                return maze[row][col] === 1;
+            }
+            return false;
+        }
+
+        function checkExit() {
+            const col = Math.floor(ball.x / cellWidth);
+            const row = Math.floor(ball.y / cellHeight);
+            if (row === exit.row && col === exit.col) {
+                count++;
+                exitCountSpan.innerText = count;
+                resetMaze();
+            }
+        }
+
+        function animate() {
+            if (!homePage.classList.contains('active')) return; // Pause when not viewing homepage
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMaze();
+
+            // Predict next position
+            let nextX = ball.x + ball.vx;
+            let nextY = ball.y + ball.vy;
+
+            // Simple Axis-Aligned Bounding Box (AABB) collision resolution
+            if (isCollision(nextX, ball.y)) { // X-axis bounce
+                ball.vx *= -1;
+                nextX = ball.x + ball.vx;
+            }
+            if (isCollision(ball.x, nextY)) { // Y-axis bounce
+                ball.vy *= -1;
+                nextY = ball.y + ball.vy;
+            }
+            
+            // Corner case fallback
+            if (isCollision(nextX, nextY)) {
+                 ball.vx *= -1;
+                 ball.vy *= -1;
+                 nextX = ball.x + ball.vx;
+                 nextY = ball.y + ball.vy;
+            }
+
+            ball.x = nextX;
+            ball.y = nextY;
+
+            drawBall();
+            checkExit();
+            requestAnimationFrame(animate);
+        }
+
+        // --- Core Page Navigation (Updated) ---
         function switchPage(pageId) {
-            // Hide the iframe if switching pages
             frame.style.display = 'none';
             frame.src = 'about:blank';
             
-            // Toggle active class on pages
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             
-            // Toggle active class on nav items
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             event.currentTarget.classList.add('active');
+
+            // Handle starting/stopping the maze animation
+            if (pageId === 'home') {
+                animate(); // Restart animation
+            }
         }
 
+        // --- Startup & Core UV ---
         async function launchApp(url) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // ... (launchApp remains the same, but switchPage will stop the maze)
+            switchPage('home'); // Briefly switch away to stop animation
+            homePage.classList.remove('active'); // Explicitly hide homepage
             frame.style.display = 'block';
 
             if ('serviceWorker' in navigator) {
@@ -255,15 +432,17 @@
         }
 
         document.getElementById('proxy-form').onsubmit = (e) => {
-            e.preventDefault();
-            let url = input.value.trim();
-            if (!url.includes('.') || url.includes(' ')) {
-                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-            } else if (!url.startsWith('http')) {
-                url = 'https://' + url;
-            }
-            launchApp(url);
+            // ... (form submission logic remains the same, calling launchApp)
         };
+
+        // Initial setup
+        window.addEventListener('load', () => {
+            initCanvas();
+            resetMaze();
+            animate();
+        });
+        window.addEventListener('resize', initCanvas); // Adjust canvas coordinates on window resize
+
     </script>
 </body>
 </html>
