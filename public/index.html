@@ -24,7 +24,6 @@
             overflow: hidden;
         }
 
-        /* Sidebar Styling */
         .sidebar {
             width: 240px;
             background: var(--sidebar-bg);
@@ -55,6 +54,7 @@
             padding: 12px; border-radius: 8px; color: var(--accent);
             outline: none; box-sizing: border-box; transition: 0.3s;
         }
+
         #url-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 68, 0, 0.2); }
 
         .nav-label {
@@ -67,10 +67,10 @@
             padding: 12px; color: #888; border-radius: 8px;
             margin-bottom: 5px; cursor: pointer; transition: 0.2s;
         }
+
         .nav-item:hover, .nav-item.active { background: #151515; color: #fff; }
         .nav-item i { color: var(--accent); width: 20px; text-align: center; }
 
-        /* Main View */
         .main-view {
             flex-grow: 1; position: relative;
             background: var(--bg); overflow-y: auto;
@@ -80,6 +80,7 @@
             display: none; width: 100%; height: 100%;
             padding: 40px; box-sizing: border-box; overflow-y: auto;
         }
+
         .page.active { display: block; }
 
         .section-header {
@@ -88,7 +89,6 @@
             text-shadow: 0 0 10px rgba(255, 68, 0, 0.3);
         }
 
-        /* App Grid */
         .grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;
         }
@@ -98,10 +98,10 @@
             padding: 25px 15px; border-radius: 12px; text-align: center;
             transition: 0.3s; cursor: pointer; position: relative; z-index: 10;
         }
+
         .app-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .app-card i { font-size: 2.2rem; margin-bottom: 12px; display: block; }
 
-        /* Custom UI overlay for the Homepage */
         #home {
             padding: 0; margin: 0; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -127,7 +127,6 @@
             font-size: 0.9rem; font-weight: bold; margin-top: 15px; display: inline-block;
         }
 
-        /* Frame */
         #content-frame {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; border: none;
@@ -139,7 +138,7 @@
 
     <div class="sidebar">
         <div class="logo-section" onclick="switchPage('home')">
-            <div class="logo-text">VOID</div>
+            <div class="logo-text">Blackhole_proxy</div>
         </div>
 
         <div class="search-container">
@@ -212,7 +211,6 @@
     <script src="uv/uv.bundle.js"></script>
     <script src="uv/uv.config.js"></script>
     <script>
-        // UI Navigation Logic
         const frame = document.getElementById('content-frame');
         const input = document.getElementById('url-input');
 
@@ -248,13 +246,12 @@
             launchApp(url);
         };
 
-        // --- HIGH QUALITY MAZE LOGIC ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         const exitCountSpan = document.getElementById('exit-count');
         const mainView = document.getElementById('main-view');
 
-        let cellSize = 45; // Dynamically scaling squares
+        let cellSize = 45;
         let rows, cols, maze;
         let count = 0;
         
@@ -266,14 +263,12 @@
         let exit = { row: 0, col: 0 };
 
         function resizeCanvas() {
-            // Fill the main view area perfectly
             canvas.width = mainView.clientWidth;
             canvas.height = mainView.clientHeight;
             
             cols = Math.floor(canvas.width / cellSize);
             rows = Math.floor(canvas.height / cellSize);
             
-            // Adjust cell size slightly so it perfectly covers the edges without gaps
             let exactCellWidth = canvas.width / cols;
             let exactCellHeight = canvas.height / rows;
             cellSize = Math.max(exactCellWidth, exactCellHeight);
@@ -305,7 +300,6 @@
                 }
             }
 
-            // Set exit at bottom right
             exit = { row: rows - 1, col: cols - 1 };
             maze[exit.row][exit.col] = 0;
             if (exit.row > 0 && exit.col > 0 && maze[exit.row - 1][exit.col] === 1 && maze[exit.row][exit.col - 1] === 1) {
@@ -315,9 +309,8 @@
 
         function resetMaze() {
             generateMaze();
-            ball.radius = cellSize * 0.25; // Smaller ball prevents tight corner clipping
+            ball.radius = cellSize * 0.25;
             
-            // Find a valid starting spot in top-left quadrant
             let startR = 0, startC = 0;
             while(maze[startR][startC] === 1) {
                 startR = Math.floor(Math.random() * (rows/3));
@@ -327,19 +320,15 @@
             ball.x = (startC * cellSize) + (cellSize / 2);
             ball.y = (startR * cellSize) + (cellSize / 2);
             
-            // Speed based on screen size so it scales nicely
             const speed = cellSize * 0.12; 
             ball.vx = speed * (Math.random() > 0.5 ? 1 : -1);
             ball.vy = speed * (Math.random() > 0.5 ? 1 : -1);
         }
 
-        // --- UPGRADED COLLISION DETECTION ---
         function isCollision(newX, newY) {
-            // Check canvas boundaries
             if (newX - ball.radius < 0 || newX + ball.radius > canvas.width) return true;
             if (newY - ball.radius < 0 || newY + ball.radius > canvas.height) return true;
 
-            // Check grid bounding box (prevents clipping through walls entirely)
             let minCol = Math.floor((newX - ball.radius) / cellSize);
             let maxCol = Math.floor((newX + ball.radius) / cellSize);
             let minRow = Math.floor((newY - ball.radius) / cellSize);
@@ -356,8 +345,8 @@
         }
 
         function drawMaze() {
-            ctx.fillStyle = '#0a0a0a'; // Wall color
-            ctx.strokeStyle = '#151515'; // Wall border
+            ctx.fillStyle = '#0a0a0a';
+            ctx.strokeStyle = '#151515';
             ctx.lineWidth = 1;
 
             for (let r = 0; r < rows; r++) {
@@ -369,12 +358,11 @@
                 }
             }
             
-            // Draw Exit (Neon Green)
             ctx.fillStyle = '#00ff44';
             ctx.shadowBlur = 15;
             ctx.shadowColor = '#00ff44';
             ctx.fillRect(exit.col * cellSize + 5, exit.row * cellSize + 5, cellSize - 10, cellSize - 10);
-            ctx.shadowBlur = 0; // Reset shadow
+            ctx.shadowBlur = 0;
         }
 
         function animate() {
@@ -383,16 +371,13 @@
                 return;
             }
 
-            // High-Quality Motion Blur Trail Effect
             ctx.fillStyle = 'rgba(5, 5, 5, 0.3)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             drawMaze();
 
-            // Calculate next position
             let nextX = ball.x + ball.vx;
             let nextY = ball.y + ball.vy;
 
-            // Apply Axis-Aligned Collision Resolution
             if (isCollision(nextX, ball.y)) {
                 ball.vx *= -1;
                 nextX = ball.x + ball.vx;
@@ -402,7 +387,6 @@
                 nextY = ball.y + ball.vy;
             }
             
-            // Corner catch
             if (isCollision(nextX, nextY)) {
                 ball.vx *= -1;
                 ball.vy *= -1;
@@ -413,7 +397,6 @@
             ball.x = nextX;
             ball.y = nextY;
 
-            // Draw glowing ball
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             ctx.fillStyle = ball.color;
@@ -423,7 +406,6 @@
             ctx.closePath();
             ctx.shadowBlur = 0;
 
-            // Exit Check
             const col = Math.floor(ball.x / cellSize);
             const row = Math.floor(ball.y / cellSize);
             if (row === exit.row && col === exit.col) {
@@ -435,7 +417,6 @@
             requestAnimationFrame(animate);
         }
 
-        // Initialize Canvas
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('load', () => {
             resizeCanvas();
