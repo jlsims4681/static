@@ -148,7 +148,7 @@
         </div>
 
         <div class="nav-label">System</div>
-        <div class="nav-item active" onclick="switchPage(event, 'home')">
+        <div id="nav-home" class="nav-item active" onclick="switchPage(event, 'home')">
             <i class="fas fa-satellite"></i> Homepage
         </div>
         <div class="nav-item" onclick="switchPage(event, 'apps')">
@@ -223,12 +223,21 @@
             
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if (e && e.currentTarget) {
-                e.currentTarget.classList.add('active');
+                if (e.currentTarget.classList.contains('logo-section')) {
+                    document.getElementById('nav-home').classList.add('active');
+                } else {
+                    e.currentTarget.classList.add('active');
+                }
             }
+
+            if (pageId === 'home') document.title = 'Blackhole // Home';
+            if (pageId === 'apps') document.title = 'Blackhole // Apps';
+            if (pageId === 'games') document.title = 'Blackhole // Games';
         }
 
         async function launchApp(url) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.title = 'Blackhole // Running';
             frame.style.display = 'block';
 
             if ('serviceWorker' in navigator) {
