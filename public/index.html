@@ -137,8 +137,8 @@
 <body>
 
     <div class="sidebar">
-        <div class="logo-section" onclick="switchPage('home')">
-            <div class="logo-text">Blackhole_proxy</div>
+        <div class="logo-section" onclick="switchPage(event, 'home')">
+            <div class="logo-text">BLACKHOLE</div>
         </div>
 
         <div class="search-container">
@@ -148,13 +148,13 @@
         </div>
 
         <div class="nav-label">System</div>
-        <div class="nav-item active" onclick="switchPage('home')">
+        <div class="nav-item active" onclick="switchPage(event, 'home')">
             <i class="fas fa-satellite"></i> Homepage
         </div>
-        <div class="nav-item" onclick="switchPage('apps')">
+        <div class="nav-item" onclick="switchPage(event, 'apps')">
             <i class="fas fa-th-large"></i> Apps
         </div>
-        <div class="nav-item" onclick="switchPage('games')">
+        <div class="nav-item" onclick="switchPage(event, 'games')">
             <i class="fas fa-gamepad"></i> Games
         </div>
 
@@ -169,7 +169,7 @@
             <canvas id="bg-canvas"></canvas>
             
             <div class="home-overlay">
-                <div class="section-header" style="margin-bottom: 10px; font-size: 2.5rem;">BLACKHOLE PROXY</div>
+                <div class="section-header" style="margin-bottom: 10px; font-size: 2.5rem;">BLACKHOLE HOME</div>
                 <p style="color: #888; font-size: 1.1rem;">Type in the bar to search</p>
                 <div class="counter-badge">Maze Solves: <span id="exit-count" style="color: #fff;">0</span></div>
             </div>
@@ -214,7 +214,7 @@
         const frame = document.getElementById('content-frame');
         const input = document.getElementById('url-input');
 
-        function switchPage(pageId) {
+        function switchPage(e, pageId) {
             frame.style.display = 'none';
             frame.src = 'about:blank';
             
@@ -222,7 +222,9 @@
             document.getElementById(pageId).classList.add('active');
             
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if (e && e.currentTarget) {
+                e.currentTarget.classList.add('active');
+            }
         }
 
         async function launchApp(url) {
