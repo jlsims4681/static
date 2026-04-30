@@ -243,6 +243,10 @@
 
             if ('serviceWorker' in navigator) {
                 await window.navigator.serviceWorker.register('./sw.js', { scope: __uv$config.prefix });
+                
+                // THE FIX: Wait for the service worker to actually be ready before loading the iframe
+                await navigator.serviceWorker.ready;
+                
                 frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
             }
         }
